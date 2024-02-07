@@ -1,0 +1,92 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Index ";
+}
+
+<div id="jstree">
+</div>
+
+@using (Html.BeginForm("Index", "State", FormMethod.Post))
+{
+    <input type="hidden" name="selectedItems" id="selectedItems" />
+    <input type="submit" value="Submit" />
+}
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            // Initialize the jstree with the data passed from the controller.
+            var nodes = @Html.Raw(ViewBag.Json);
+            $('#jstree').jstree({
+                "core": {
+                    "themes": {
+                        "variant": "large"
+                    },
+                    "data": nodes
+                },
+                "checkbox": {
+                    "keep_selected_style": false
+                },
+                "plugins": ["wholerow", "checkbox"],
+            });
+
+            // Reinitialize the jstree with the updated data when the page is loaded.
+            $(window).on('load', function () {
+                var nodes = @Html.Raw(ViewBag.Json);
+                $('#jstree').jstree(true).settings.core.data = nodes;
+                $('#jstree').jstree(true).refresh();
+            });
+
+            // Add a script section to handle the form submission.
+            $('#jstree').on('changed.jstree', function (e, data) {
+                var i, j;
+                var postedItems = [];
+                for (i = 0, j = data.selected.length; i < j; i++) {
+
+                    //Fetch the Id.
+                    var id = data.selected[i];
+
+                    //Remove the ParentId.
+                    if (id.indexOf('-') != -1) {
+                        id = id.split("-")[1];
+                    }
+
+                    //Add the Node to the JSON Array.
+                    postedItems.push({
+                        text: data.instance.get_node(data.selected[i]).text,
+                        id: id,
+                        parent: data.node.parents[0]
+                    });
+                }
+
+                //Serialize the JSON Array and save in HiddenField.
+                $('#selectedItems').val(JSON.stringify(postedItems));
+            });
+
+            // Add a script section to handle the form submission.
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+
+                // Get the selected items from the hidden field.
+                var postedItems = JSON.parse($('#selectedItems').val());
+
+                // Send the selected items to the server using AJAX.
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: { selectedItems: JSON.stringify(postedItems) },
+                    success: function (result) {
+                        // Display a success message.
+                        alert('Selection saved successfully!');
+                    }
+                });
+            });
+        });
+        });
+    </script>
+}
