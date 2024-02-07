@@ -15,8 +15,6 @@ StateViewApplication -This application created using Asp.Net Core MVC with ADO.n
 ![Screenshot 2024-02-07 013352](https://github.com/Harsha1176/NodeApplication/assets/131029882/c0194bec-60e2-4d43-8777-bc5a6353f589)
 ![Screenshot 2024-02-07 013407](https://github.com/Harsha1176/NodeApplication/assets/131029882/24684719-947c-4944-b37c-94b933ba26e0)
 ![Screenshot 2024-02-07 112621](https://github.com/Harsha1176/NodeApplication/assets/131029882/ddd6b086-192f-48e5-9d48-9f03bfeded63)
-![Uploading Screenshot 2024-02-07 112629.png…]()
+![Screenshot 2024-02-07 112629](https://github.com/Harsha1176/NodeApplication/assets/131029882/d952ef00-d09a-4e32-89ce-4aecffe6116e)
 ![Screenshot 2024-02-07 112920](https://github.com/Harsha1176/NodeApplication/assets/131029882/5c29dde0-ed3e-404f-a7c0-f69186b4ca48)
-![Uploading Screenshot 2024-02-07 112934.png…]()
-
-
+![Screenshot 2024-02-07 112934](https://github.com/Harsha1176/NodeApplication/assets/131029882/5b0ac5c4-b7bd-43d4-bb97-aa203eca8f43)
