@@ -9,13 +9,13 @@ namespace StateViewApplication.Controllers
     {
         private readonly DatabaseHelper _databaseHelper;
 
-        public StateController(string connectionString)
+        public StateController(IConfiguration configuration)
         {
-            _databaseHelper = new DatabaseHelper(connectionString);
+            _databaseHelper = new DatabaseHelper(configuration);
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public ActionResult Index()
         {
             List<TreeViewNode> nodes = _databaseHelper.GetNodes();
 
@@ -23,6 +23,7 @@ namespace StateViewApplication.Controllers
             ViewBag.Json = JsonConvert.SerializeObject(nodes);
             return View();
         }
+
 
 
 

@@ -1,98 +1,106 @@
 ﻿using Microsoft.Data.SqlClient;
 using StateViewApplication.Models;
 using System.Data;
+using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 
-namespace StateViewApplication.Data
-{
-    public class DatabaseHelper
+
+
+    namespace StateViewApplication.Data
     {
-        private string _connectionString;
-
-        public DatabaseHelper(string connectionString)
+        public class DatabaseHelper
         {
-            _connectionString = connectionString;
-        }
+            private readonly string _connectionString;
 
-        public List<TreeViewNode> GetNodes()
-        {
-            List<TreeViewNode> nodes = new List<TreeViewNode>();
-
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            public DatabaseHelper(IConfiguration configuration)
             {
-                connection.Open();
+                _connectionString = configuration.GetConnectionString("DefaultConnection");
+            }
 
-                using (SqlCommand command = new SqlCommand("dbo.GetNodes", connection))
+            public List<TreeViewNode> GetNodes()
+            {
+                List<TreeViewNode> nodes = new List<TreeViewNode>();
+
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
 
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlCommand command = new SqlCommand("dbo.GetNodes", connection))
                     {
-                        while (reader.Read())
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            nodes.Add(new TreeViewNode
+                            while (reader.Read())
                             {
-                                id = reader["Id"].ToString(),
-                                parent = reader["ParentId"].ToString(),
-                                text = reader["Text"].ToString()
-                            });
+                                nodes.Add(new TreeViewNode
+                                {
+                                    id = reader["Id"].ToString(),
+                                    parent = reader["ParentId"].ToString(),
+                                    text = reader["Text"].ToString()
+                                });
+                            }
                         }
+                    }
+                }
+
+                return nodes;
+            }
+
+
+
+
+            public void InsertNode(TreeViewNode node)
+            {
+                using (SqlConnection connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand("dbo.InsertNode", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", node.id);
+                        command.Parameters.AddWithValue("@ParentId", node.parent);
+                        command.Parameters.AddWithValue("@Text", node.text);
+
+                        command.ExecuteNonQuery();
                     }
                 }
             }
 
-            return nodes;
-        }
-
-        public void InsertNode(TreeViewNode node)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            public void UpdateNode(TreeViewNode node)
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("dbo.InsertNode", connection))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", node.id);
-                    command.Parameters.AddWithValue("@ParentId", node.parent);
-                    command.Parameters.AddWithValue("@Text", node.text);
+                    connection.Open();
 
-                    command.ExecuteNonQuery();
+                    using (SqlCommand command = new SqlCommand("dbo.UpdateNode", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", node.id);
+                        command.Parameters.AddWithValue("@ParentId", node.parent);
+                        command.Parameters.AddWithValue("@Text", node.text);
+
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
-        }
 
-        public void UpdateNode(TreeViewNode node)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            public void DeleteNode(string id)
             {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("dbo.UpdateNode", connection))
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", node.id);
-                    command.Parameters.AddWithValue("@ParentId", node.parent);
-                    command.Parameters.AddWithValue("@Text", node.text);
+                    connection.Open();
 
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
+                    using (SqlCommand command = new SqlCommand("dbo.DeleteNode", connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@Id", id);
 
-        public void DeleteNode(string id)
-        {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-
-                using (SqlCommand command = new SqlCommand("dbo.DeleteNode", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    command.ExecuteNonQuery();
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
         }
     }
-}
+

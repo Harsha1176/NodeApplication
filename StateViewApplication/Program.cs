@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using StateViewApplication.Data;
+using System.Configuration;
 
 namespace StateViewApplication
 {
@@ -13,8 +14,11 @@ namespace StateViewApplication
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             // Add services to the container.
-            builder.Services.AddSingleton<string>(  // Add services to the container.
-            builder.Configuration.GetConnectionString("DefaultConnection"));
+           
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+            builder.Services.AddScoped<DatabaseHelper>(serviceProvider =>
+                new DatabaseHelper(serviceProvider.GetService<IConfiguration>()));
 
             var app = builder.Build();
 
